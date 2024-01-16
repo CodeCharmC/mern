@@ -127,6 +127,21 @@ export default function Profile() {
       }      
    }
 
+   const handleDeleteListing = async(listingId) => {
+      try {
+         const res = await fetch(`/api/listing/delete/${listingId}`, {
+            method: 'DELETE'
+         });
+         const data = await res.json();
+         if (data.success === false) {
+            return;
+         }
+         setUserListings((prev)=> prev.filter(listing => listing._id !== listingId));
+      } catch (error) {
+         console.log(error.message);
+      }
+   }
+
    return (
       <div className='p-3 max-w-lg mx-auto'>
          <h1 className='text-3xl font-semibold text-center my-7'>
@@ -211,13 +226,13 @@ export default function Profile() {
                {userListings.map((listing) => (
                   <div key={listing._id} className='flex border p-3 items-center justify-between gap-4 rounded-lg'>
                      <Link to={`/listing/${listing._id}`}>
-                        <img src={listing.imageUrls[0]} alt="Listings cover" className='w-full h-16 w-16 object-contain' />
+                        <img src={listing.imageUrls[0]} alt="Listings cover" className=' h-16 w-16 object-contain' />
                      </Link>
                      <Link to={`/listing/${listing._id}`} className='truncate flex-1'>
                         <p className='text-lg font-semibold text-slate-700 hover:text-slate-400 truncate '>{listing.name}</p>
                      </Link>
                      <div className='flex flex-col items-end'>
-                        <button className='text-red-700 uppercase font-semibold'>Delete</button>
+                        <button onClick={() => handleDeleteListing(listing._id)} className='text-red-700 uppercase font-semibold'>Delete</button>
                         <button className='text-emerald-900 uppercase font-semibold'>Edit</button>
                      </div>
                   </div>
