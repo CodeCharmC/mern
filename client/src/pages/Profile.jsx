@@ -2,13 +2,13 @@ import { useSelector } from 'react-redux';
 import { useRef, useState, useEffect } from 'react';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
-import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart, signOutUserSuccess, signOutUserFailure } from '../redux/user/userSlice';
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart} from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 
 export default function Profile() {
-   const { currentUser, loading, error } = useSelector(state => state.user);
+   const { currentUser, loading, error } = useSelector((state) => state.user);
    const fileRef = useRef(null);
    const [file, setFile] = useState(undefined);
    const [filePerc, setFilePerc] = useState(0);
@@ -50,11 +50,11 @@ export default function Profile() {
 
    const handleChange = (e) => {
       setFormData({ ...formData, [e.target.id]: e.target.value });
-   }
+   };
    
    const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log(formData);
+
       try {
          dispatch(updateUserStart());
          const res = await fetch(`/api/user/update/${currentUser._id}`, {
@@ -65,7 +65,7 @@ export default function Profile() {
             body: JSON.stringify(formData),
          });
          const data = await res.json();
-         console.log(data);
+         
          if (data.success === false) {
             dispatch(updateUserFailure(data.message));
             return;
@@ -73,12 +73,12 @@ export default function Profile() {
          dispatch(updateUserSuccess(data));
          setUpdateSuccess(true);
       } catch (error) {
-         console.log(error);
+        
          dispatch(updateUserFailure(error.message));
       }
    };
 
-   const handleDeleteUser = async () => { 
+   const handleDeleteUser = async () => {
       try {
          dispatch(deleteUserStart());
          const res = await fetch(`/api/user/delete/${currentUser._id}`, {
@@ -87,13 +87,13 @@ export default function Profile() {
          const data = await res.json();
          if (data.success === false) {
             dispatch(deleteUserFailure(data.message));
-            return;  
+            return;
          }
          dispatch(deleteUserSuccess(data));
       } catch (error) {
          dispatch(deleteUserFailure(error.message));
       }
-   } 
+   };
    
    const handleSignOut = async () => {
       try {
@@ -101,15 +101,15 @@ export default function Profile() {
          const res = await fetch('/api/auth/signout');
          const data = await res.json();
          if (data.success === false) {
-            dispatch(signOutUserFailure(data.message));
+            dispatch(deleteUserFailure(data.message));
             return;
          };
-         dispatch(signOutUserSuccess(data));
+         dispatch(deleteUserSuccess(data));
          navigate('/sign-in');
-      }catch (error) {
-         dispatch(signOutUserFailure(error.message));
+      } catch (error) {
+         dispatch(deleteUserFailure(data.message));
       }
-   }
+   };
 
    const handleShowListings = async () => {
       try {
@@ -119,15 +119,15 @@ export default function Profile() {
          if (data.success === false) {
             setShowListingsError(true);
             return;
-         }  
+         }
          setUserListings(data);
-         setShowListingsButtonClicked(true); 
+         setShowListingsButtonClicked(true);
       } catch (error) {
-         showListingsError(true);
-      }      
-   }
+         setShowListingsError(true); 
+      }
+   };
 
-   const handleDeleteListing = async(listingId) => {
+   const handleListingDelete = async (listingId) => {
       try {
          const res = await fetch(`/api/listing/delete/${listingId}`, {
             method: 'DELETE'
@@ -136,11 +136,11 @@ export default function Profile() {
          if (data.success === false) {
             return;
          }
-         setUserListings((prev)=> prev.filter(listing => listing._id !== listingId));
+         setUserListings((prev) => prev.filter((listing) => listing._id !== listingId));
       } catch (error) {
          console.log(error.message);
       }
-   }
+   };
 
    return (
       <div className='p-3 max-w-lg mx-auto'>
@@ -232,7 +232,7 @@ export default function Profile() {
                         <p className='text-lg font-semibold text-slate-700 hover:text-slate-400 truncate '>{listing.name}</p>
                      </Link>
                      <div className='flex flex-col items-end'>
-                        <button onClick={() => handleDeleteListing(listing._id)} className='text-red-700 uppercase font-semibold'>Delete</button>
+                        <button onClick={() => handleListingDelete(listing._id)} className='text-red-700 uppercase font-semibold'>Delete</button>
                         <Link to={`/update-listing/${listing._id}`}>
                            <button className='text-emerald-900 uppercase font-semibold'>Edit</button>
                         </Link>

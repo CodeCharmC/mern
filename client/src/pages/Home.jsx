@@ -11,7 +11,7 @@ export default function Home() {
    const [saleListings, setSaleListings] = useState([]);
    const [rentListings, setRentListings] = useState([]);
    SwiperCore.use([Navigation]);
-   console.log(saleListings);
+
    console.log(offerListings);
    useEffect(() => {
       const fetchOfferListings = async () => {
@@ -135,7 +135,7 @@ export default function Home() {
                            className='text-sm text-blue-800 hover:underline'
                            to={'/search?type=sale'}
                         >
-                           Show more places for sale
+                           Show more places for sale offerListing
                         </Link>
                      </div>
                      <div className='flex flex-wrap gap-4'>               
